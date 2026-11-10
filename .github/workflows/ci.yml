@@ -40,7 +40,7 @@ jobs:
           set -euxo pipefail
           if [[ "${RUNNER_OS}" == "Linux" ]]; then
             sudo apt-get update
-            sudo apt-get -yq install curl jq gpg unzip libcurl4-openssl-dev
+            sudo apt-get -yq install curl jq gpg unzip libcurl4-openssl-dev binutils-gold
             ARCH="$(uname -m)"
             curl -L -O --retry 3 "https://download.swift.org/swiftly/linux/swiftly-${ARCH}.tar.gz"
             tar -xzf "swiftly-${ARCH}.tar.gz"
