@@ -128,12 +128,6 @@ fun getSwiftSDKPath(): String {
     throw GradleException("Swift SDK path not found. Please set swiftConfig.swiftSDKPath or install the Swift SDK for Android.")
 }
 
-// Helper function to get Swift resources path
-fun getSwiftResourcesPath(arch: Arch): String {
-    val sdkVersion = swiftConfig.androidSdkVersion
-    return "${getSwiftSDKPath()}/swift-${sdkVersion}.artifactbundle/swift-android/swift-resources/usr/lib/swift_static-${arch.swiftArch}/"
-}
-
 // Function to create Swift build task
 fun createSwiftBuildTask(
     buildTypeName: String,
@@ -146,7 +140,6 @@ fun createSwiftBuildTask(
         tasks.named<Exec>(taskName)
     } ?: tasks.register<Exec>(taskName) {
         val swiftlyPath = getSwiftlyPath()
-        val resourcesPath = getSwiftResourcesPath(arch)
         val swiftVersion = swiftConfig.swiftVersion
 
         // Build the SDK name based on architecture
@@ -154,10 +147,10 @@ fun createSwiftBuildTask(
         val defaultArgs = listOf(
             "run", "+${swiftVersion}", "swift", "build",
             "--swift-sdk", sdkName,
-            "--build-system", "native", // old build system until we can sort out the output paths
-            "-Xswiftc", "-static-stdlib",
-            "-Xswiftc", "-resource-dir",
-            "-Xswiftc", resourcesPath
+            "--build-system", "swiftbuild",
+            // Keep the products in .build/<sdk>/<configuration>, where the copy task looks for them
+            "--scratch-path", ".build/$sdkName",
+            "--static-swift-stdlib"
         )
         val configurationArgs = listOf("-c", if (isDebug) "debug" else "release")
         val extraArgs = if (isDebug) swiftConfig.debugExtraBuildFlags else swiftConfig.releaseExtraBuildFlags
@@ -174,12 +167,6 @@ fun createSwiftBuildTask(
                     "swiftly not found at: $swiftlyPath\n" +
                             "Please install swiftly or configure the path in swiftConfig.swiftlyPath"
                 )
-            }
-
-            // Check if resources directory exists
-            if (!file(resourcesPath).exists()) {
-                println("Warning: Swift resources directory not found at: $resourcesPath")
-                println("You may need to install the Swift SDK for Android")
             }
 
             println("Building Swift for ${arch.variantName} ${if (isDebug) "Debug" else "Release"}")
