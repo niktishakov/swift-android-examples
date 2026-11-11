@@ -291,6 +291,12 @@ fun handleVariant(variant: Any) {
 project.afterEvaluate {
     val androidExtension = project.extensions.findByName("android")
     if (androidExtension != null) {
+        // Build the Swift code for the app's minSdk
+        val defaultConfig = androidExtension::class.java.getMethod("getDefaultConfig").invoke(androidExtension)
+        (defaultConfig::class.java.getMethod("getMinSdk").invoke(defaultConfig) as? Int)?.let {
+            swiftConfig.apiLevel = it
+        }
+
         // Try applicationVariants first (for apps)
         try {
             val applicationVariantsMethod = androidExtension::class.java.getMethod("getApplicationVariants")
