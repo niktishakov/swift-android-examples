@@ -22,7 +22,7 @@ import java.util.concurrent.Callable
 
 // Configuration class for Swift builds
 data class SwiftConfig(
-    var apiLevel: Int = 28, // Default API level
+    var apiLevel: Int = 23, // Default API level
     var debugAbiFilters: Set<String> = setOf("arm64-v8a"),
     var debugExtraBuildFlags: List<String> = emptyList(),
     var releaseAbiFilters: Set<String> = setOf("arm64-v8a", "armeabi-v7a", "x86_64"),
