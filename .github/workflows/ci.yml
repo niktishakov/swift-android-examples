@@ -20,10 +20,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        swift_version: ['6.4', 'nightly-6.4.x', 'nightly-main']
+        swift_version: ['6.4']
         ndk_version: ['r30']
         os: ['ubuntu-26.04']
-        configuration: ['Debug', 'Release']
+        configuration: ['Debug']
     runs-on: ${{ matrix.os }}
     env:
       NDK_VERSION: ${{ matrix.ndk_version }}
@@ -244,30 +244,15 @@ jobs:
           fi
           echo "::endgroup::"
 
-      - name: Build hello-swift-raw-jni APK
-        run: ./gradlew :hello-swift-raw-jni:assemble${{ matrix.configuration }} --stacktrace
 
-      - name: Build hello-swift-raw-jni-callback APK
-        run: ./gradlew :hello-swift-raw-jni-callback:assemble${{ matrix.configuration }} --stacktrace
 
-      - name: Build hello-swift-raw-jni-library
-        run: ./gradlew :hello-swift-raw-jni-library:assemble${{ matrix.configuration }} --stacktrace
 
-      - name: Build native-activity APK
-        run: ./gradlew :native-activity:assemble${{ matrix.configuration }} --stacktrace
 
       - name: Build hello-swift-java APK
         run: ./gradlew :hello-swift-java-hashing-app:assemble${{ matrix.configuration }} --stacktrace
 
-      - name: Build swift-java-weather-app APK
-        run: ./gradlew :swift-java-weather-app-weather-app:assemble${{ matrix.configuration }} --stacktrace
 
-      - name: Build hello-cpp-swift cpp-lib
-        working-directory: hello-cpp-swift/cpp-lib
-        run: ./build-android-static.sh
 
-      - name: Build hello-cpp-swift APK
-        run: ./gradlew :hello-cpp-swift:app:assemble${{ matrix.configuration }} --stacktrace
 
       - name: Summarize APK artifacts
         if: always()

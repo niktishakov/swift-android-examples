@@ -147,6 +147,7 @@ def swiftBuildArgs = { info ->
     if (swiftBuildSystem) {
         args += ["--build-system", swiftBuildSystem]
     }
+    args += ["--static-swift-stdlib"]
     return args
 }
 
