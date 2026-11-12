@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        swift_version: ['nightly-6.4.x']
+        swift_version: ['6.4']
         ndk_version: ['r30']
         os: ['ubuntu-26.04']
         configuration: ['Debug']
@@ -211,6 +211,14 @@ jobs:
           if [[ -x "./swift-android/scripts/setup-android-sdk.sh" ]]; then
             "./swift-android/scripts/setup-android-sdk.sh"
           fi
+
+      - name: "Fork test only: add -ldispatch -lBlocksRuntime as swiftlang/swift#94120 does"
+        run: |
+          set -euxo pipefail
+          for f in $(find "$HOME" -path '*swift-android*' -name static-stdlib-args.lnk); do
+            grep -q -- '-ldispatch' "$f" || sed -i 's/^-lswiftCore$/-lswiftCore\n-ldispatch -lBlocksRuntime/' "$f"
+            echo "== $f"; cat "$f"
+          done
 
       - name: Publish swift-java packages to local Maven
         # The hashing-lib, weather-lib, and hello-cpp-swift/swift-lib modules
